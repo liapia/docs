@@ -26,7 +26,6 @@ DESIGN_TIPS = [
 ]
 
 DESIGN_QUOTES = [
-    '"Design is not just what it looks like and feels like. Design is how it works." — Steve Jobs',
     '"Good design is obvious. Great design is transparent." — Joe Sparano',
     '"Simplicity is the ultimate sophistication." — Leonardo da Vinci',
     '"Design is thinking made visual." — Saul Bass',
@@ -39,6 +38,8 @@ DESIGN_QUOTES = [
     '"A design isn\'t finished until someone is using it." — Brenda Laurel',
     '"Make it simple, but significant." — Don Draper',
     '"Color is a power which directly influences the soul." — Wassily Kandinsky',
+    '"Good design is as little design as possible." — Dieter Rams',
+    '"Styles come and go. Good design is a language, not a style." — Massimo Vignelli',
 ]
 
 DESIGN_RESOURCES = [
@@ -65,17 +66,4 @@ DESIGN_TRENDS = [
     "3D in flat UI — the sweet spot between skeuomorphism and minimalism.",
     "Hand-drawn illustrations are adding warmth back to digital products.",
     "Design systems aren't just for big teams. Solo designers benefit from tokens too.",
-]
-
-HASHTAGS = [
-    "#design",
-    "#uidesign",
-    "#uxdesign",
-    "#designtips",
-    "#webdesign",
-    "#productdesign",
-    "#figma",
-    "#typography",
-    "#designinspiration",
-    "#designthinking",
 ]

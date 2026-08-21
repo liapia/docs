@@ -8,19 +8,17 @@ import uuid
 from datetime import datetime, timezone
 
 from queue_file import QueueItem, load_queue, pending_items, save_queue
-from sources import CATEGORIES, HASHTAGS
+from sources import CATEGORIES
 
 
 def _build_post(category: str, body: str) -> str:
     label, _ = CATEGORIES[category]
-    tags = " ".join(random.sample(HASHTAGS, k=random.randint(2, 3)))
-    post = f"{label}:\n\n{body}\n\n{tags}"
+    post = f"{label}:\n\n{body}"
     if len(post) > 280:
-        post = f"{body}\n\n{tags}"
+        post = body
     if len(post) > 280:
         post = body[:277] + "..."
     return post
-
 
 def generate_queue(count: int = 20, replace: bool = False) -> list[QueueItem]:
     existing = [] if replace else load_queue()

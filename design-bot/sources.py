@@ -7,7 +7,6 @@ from content import (
     DESIGN_RESOURCES,
     DESIGN_TIPS,
     DESIGN_TRENDS,
-    HASHTAGS,
 )
 
 CATEGORIES = {
@@ -17,4 +16,4 @@ CATEGORIES = {
     "trend": ("📈 Design trend", DESIGN_TRENDS),
 }
 
-__all__ = ["CATEGORIES", "HASHTAGS"]
+__all__ = ["CATEGORIES"]
