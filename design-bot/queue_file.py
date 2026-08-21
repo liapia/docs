@@ -18,15 +18,19 @@ class QueueItem:
     category: str
     created_at: str
     posted_at: str | None = None
+    image_path: str | None = None
+    retweet_id: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> "QueueItem":
         return cls(
             id=data["id"],
-            text=data["text"],
+            text=data.get("text") or "",
             category=data["category"],
             created_at=data["created_at"],
             posted_at=data.get("posted_at"),
+            image_path=data.get("image_path"),
+            retweet_id=data.get("retweet_id"),
         )
 
 

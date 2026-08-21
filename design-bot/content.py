@@ -43,18 +43,22 @@ DESIGN_QUOTES = [
 ]
 
 DESIGN_RESOURCES = [
-    "Tool of the day: Figma auto layout — master it and your components scale effortlessly.",
-    "Reading rec: Refactoring UI by Adam Wathan & Steve Schoger. Practical design for builders.",
-    "Font pairing tip: a clean sans + an expressive serif. One for UI, one for voice.",
-    "Try Mobbin — real-world mobile UI patterns from top apps.",
+    "Tool of the day: Figma auto layout — master it and your components scale effortlessly. https://www.figma.com",
+    "Reading rec: Refactoring UI by Adam Wathan & Steve Schoger. Practical design for builders. https://www.refactoringui.com",
+    "Font pairing tip: a clean sans + an expressive serif. One for UI, one for voice. https://www.fontpair.co",
+    "Try Mobbin — real-world mobile UI patterns from top apps. https://mobbin.com",
     "Grid tip: use an 8px spacing system. Everything aligns, everything breathes.",
-    "Free illustrations: undraw.co — customizable SVGs for any project.",
-    "Color tool: coolors.co — generate beautiful palettes in seconds.",
+    "Free illustrations: undraw.co — customizable SVGs for any project. https://undraw.co",
+    "Color tool: coolors.co — generate beautiful palettes in seconds. https://coolors.co",
     "Reading rec: Don't Make Me Think by Steve Krug. UX fundamentals that still hold.",
-    "Study Radix UI — accessibility-first, composable primitives.",
-    "Contrast checker: webaim.org/resources/contrastchecker — accessibility isn't optional.",
+    "Study Radix UI — accessibility-first, composable primitives. https://www.radix-ui.com",
+    "Contrast checker: webaim.org/resources/contrastchecker — accessibility isn't optional. https://webaim.org/resources/contrastchecker/",
     "Responsive tip: test at 320px, 768px, and 1440px.",
-    "Inspiration: layers.to — curated design portfolios and case studies.",
+    "Inspiration: layers.to — curated design portfolios and case studies. https://www.layers.to",
+    "Refero for desktop + mobile UI references from real products. https://refero.design",
+    "One Page Love when you need landing-page craft, not generic templates. https://onepagelove.com",
+    "Godly.website — sites with actual point of view. https://godly.website",
+    "Laws of UX for the psychology behind interface decisions. https://lawsofux.com",
 ]
 
 DESIGN_TRENDS = [

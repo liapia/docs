@@ -34,7 +34,7 @@ def _require_credentials() -> dict[str, str]:
         "TWITTER_ACCESS_TOKEN",
         "TWITTER_ACCESS_TOKEN_SECRET",
     ]
-    values = {key: (os.getenv(key) or "").strip() for key in required}
+    values = {key: (os.getenv(key) or "").strip().strip("<>") for key in required}
     missing = [key for key, value in values.items() if not value]
     if missing:
         log.error("Missing credentials in .env: %s", ", ".join(missing))
@@ -43,23 +43,41 @@ def _require_credentials() -> dict[str, str]:
     return values
 
 
-def _client():
+def _clients():
+    """Return (v2 Client, v1.1 API) — v1.1 is required for media upload."""
     import tweepy
 
     creds = _require_credentials()
-    return tweepy.Client(
+    client = tweepy.Client(
         consumer_key=creds["TWITTER_API_KEY"],
         consumer_secret=creds["TWITTER_API_SECRET"],
         access_token=creds["TWITTER_ACCESS_TOKEN"],
         access_token_secret=creds["TWITTER_ACCESS_TOKEN_SECRET"],
     )
+    auth = tweepy.OAuth1UserHandler(
+        creds["TWITTER_API_KEY"],
+        creds["TWITTER_API_SECRET"],
+        creds["TWITTER_ACCESS_TOKEN"],
+        creds["TWITTER_ACCESS_TOKEN_SECRET"],
+    )
+    api = tweepy.API(auth)
+    return client, api
 
 
 def ensure_queue(min_pending: int = 5) -> None:
     if not queue_exists() or len(pending_items()) < min_pending:
         log.info("Generating queue...")
-        items = generate_queue(count=max(20, min_pending))
+        items = generate_queue(count=max(24, min_pending))
         write_picks_preview(items, path=str(ROOT / "picks.md"))
+
+
+def _describe(item) -> str:
+    parts = [item.text or f"(retweet {item.retweet_id})"]
+    if item.image_path:
+        parts.append(f"[image] {item.image_path}")
+    if item.retweet_id and item.category == "retweet":
+        parts.append(f"[retweet] https://x.com/i/status/{item.retweet_id}")
+    return "\n".join(parts)
 
 
 def status() -> None:
@@ -69,12 +87,27 @@ def status() -> None:
     items = load_queue()
     pending = pending_items(items)
     posted = [item for item in items if item.posted_at]
-    print(f"Queue: {len(pending)} pending · {len(posted)} posted · {len(items)} total")
+    with_images = sum(1 for item in pending if item.image_path)
+    retweets = sum(1 for item in pending if item.retweet_id)
+    print(
+        f"Queue: {len(pending)} pending · {len(posted)} posted · {len(items)} total "
+        f"({with_images} images, {retweets} retweets)"
+    )
     if pending:
         print("\nNext post:\n")
-        print(pending[0].text)
+        print(_describe(pending[0]))
     else:
         print("Queue is empty. Run: python generate_queue.py")
+
+
+def _upload_image(api, image_path: str) -> int:
+    path = Path(image_path)
+    if not path.is_absolute():
+        path = ROOT / path
+    if not path.exists():
+        raise FileNotFoundError(f"Image not found: {path}")
+    media = api.media_upload(filename=str(path))
+    return media.media_id
 
 
 def post_next(*, dry_run: bool = False) -> str | None:
@@ -85,16 +118,38 @@ def post_next(*, dry_run: bool = False) -> str | None:
         return None
 
     item = pending[0]
-    log.info("Selected %s (%s), %d chars", item.id, item.category, len(item.text))
-    print(item.text)
+    log.info(
+        "Selected %s (%s) chars=%d image=%s rt=%s",
+        item.id,
+        item.category,
+        len(item.text or ""),
+        item.image_path or "-",
+        item.retweet_id or "-",
+    )
+    print(_describe(item))
 
     if dry_run:
         log.info("Dry run — nothing posted.")
-        return item.text
+        return item.text or item.retweet_id
 
-    client = _client()
+    client, api = _clients()
     try:
-        response = client.create_tweet(text=item.text)
+        if item.category == "retweet" and item.retweet_id:
+            client.retweet(item.retweet_id)
+            url = f"https://x.com/i/status/{item.retweet_id}"
+            mark_posted(item.id)
+            write_picks_preview(load_queue(), path=str(ROOT / "picks.md"))
+            log.info("Retweeted: %s", url)
+            print(url)
+            return url
+
+        media_ids = None
+        if item.image_path:
+            media_id = _upload_image(api, item.image_path)
+            media_ids = [media_id]
+            log.info("Uploaded media_id=%s", media_id)
+
+        response = client.create_tweet(text=item.text, media_ids=media_ids)
         tweet_id = response.data["id"]
         url = f"https://x.com/i/status/{tweet_id}"
         mark_posted(item.id)
@@ -103,7 +158,7 @@ def post_next(*, dry_run: bool = False) -> str | None:
         print(url)
         return url
     except Exception:
-        log.exception("Failed to post tweet")
+        log.exception("Failed to publish queue item")
         raise
 
 
