@@ -1,0 +1,4 @@
+{
+  "name": "docs + design bot",
+  "install": "bash design-bot/setup.sh"
+}

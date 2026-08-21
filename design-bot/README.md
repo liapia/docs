@@ -1,80 +1,58 @@
 # Design Twitter/X Bot
 
-An automated bot that posts design tips, quotes, resources, and trends to Twitter/X.
+Posts design tips, quotes, resources, and trends to X from a local queue.
 
-## What it posts
-
-- **Design tips** — practical advice on typography, color, layout, spacing, and more
-- **Design quotes** — wisdom from legendary designers
-- **Design resources** — tools, books, fonts, and websites worth checking out
-- **Design trends** — what's happening in the design world right now
-
-Posts are randomly generated from a curated content library and tagged with relevant hashtags.
-
-## Setup
-
-### 1. Get Twitter/X API credentials
-
-1. Go to the [X Developer Portal](https://developer.x.com/en/portal/dashboard)
-2. Create a project and app
-3. Generate API Key, API Secret, Access Token, and Access Token Secret
-4. Make sure your app has **Read and Write** permissions
-
-### 2. Configure the bot
+## Quick start (local venv)
 
 ```bash
 cd design-bot
-cp .env.example .env
-# Edit .env with your API credentials
-```
-
-### 3. Install dependencies
-
-```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
+# Fill in TWITTER_* keys from https://console.x.com (Read and Write access)
 ```
 
-## Usage
-
-### Post a single tweet
+## Commands
 
 ```bash
+# Build / refill the post queue
+python generate_queue.py
+
+# Inspect the queue
+python bot.py --status
+
+# Preview the next post (no API call)
+python bot.py --dry-run
+
+# Post the next queue item to @leiroc_lia
 python bot.py
 ```
 
-### Preview without posting (dry run)
+## Files
 
-```bash
-python bot.py --dry-run
-```
+| File | Purpose |
+| --- | --- |
+| `bot.py` | Status, dry-run, and live posting |
+| `generate_queue.py` | Builds `data/queue.json` + `picks.md` |
+| `queue_file.py` | Queue persistence |
+| `sources.py` | Category wiring |
+| `content.py` | Curated design copy |
+| `.env` | Live API credentials (never commit) |
 
-### Run on a schedule
+## X API setup
 
-```bash
-python bot.py --schedule
-```
+1. Open [console.x.com](https://console.x.com)
+2. Use your **Default / Pay Per Use** project app
+3. Set app permissions to **Read and Write**
+4. On **Keys & Tokens**, copy:
+   - Consumer Key → `TWITTER_API_KEY`
+   - Consumer Secret → `TWITTER_API_SECRET`
+   - Access Token → `TWITTER_ACCESS_TOKEN`
+   - Access Token Secret → `TWITTER_ACCESS_TOKEN_SECRET`
+5. Regenerate the Access Token after changing permissions so it says **Read and Write**
 
-Posts every 6 hours by default. Change `POST_INTERVAL_HOURS` in `.env` to adjust.
+## Cloud Agent notes
 
-### Run with cron (alternative)
-
-Add to your crontab to post every 6 hours:
-
-```
-0 */6 * * * cd /path/to/design-bot && python bot.py
-```
-
-## Customizing content
-
-Edit `content.py` to add your own tips, quotes, resources, and trends. Each category is a simple Python list — just append new strings.
-
-## File structure
-
-```
-design-bot/
-├── bot.py              # Main bot logic and CLI
-├── content.py          # Curated design content library
-├── requirements.txt    # Python dependencies
-├── .env.example        # Template for API credentials
-└── README.md           # This file
-```
+Dependencies install into `design-bot/.venv` via the environment `install` script.
+Add the four `TWITTER_*` values as Cloud Agent secrets (or a local `.env`) before live posting.
