@@ -11,7 +11,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from generate_queue import generate_queue, write_picks_preview
-from queue_file import load_queue, mark_posted, pending_items, queue_exists
+from queue_file import load_queue, mark_posted, pending_items, queue_exists, save_queue
+from resolve_media import resolve_preview
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env")
@@ -118,6 +119,23 @@ def post_next(*, dry_run: bool = False) -> str | None:
         return None
 
     item = pending[0]
+
+    # Ensure every non-retweet gets a preview image when possible.
+    if not item.image_path and item.category != "retweet":
+        try:
+            preview = resolve_preview(item)
+        except Exception:
+            log.exception("Preview resolve failed for %s", item.id)
+            preview = None
+        if preview:
+            item.image_path = preview
+            items = load_queue()
+            for queued in items:
+                if queued.id == item.id:
+                    queued.image_path = preview
+                    break
+            save_queue(items)
+
     log.info(
         "Selected %s (%s) chars=%d image=%s rt=%s",
         item.id,

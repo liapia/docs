@@ -6,4 +6,6 @@ __pycache__/
 bot.log
 data/
 picks.md
+media/cache/
+media/cards/
 .DS_Store

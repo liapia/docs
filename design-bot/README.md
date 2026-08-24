@@ -54,12 +54,20 @@ Then rebuild:
 python generate_queue.py --replace
 ```
 
-## Auto images
+## Preview images (automatic)
 
-1. Drop `.jpg` / `.png` / `.webp` / `.gif` into `media/`
-2. Run `python generate_queue.py --replace`
-3. Eligible posts (tips, trends, resources, links) get an unused image attached automatically
-4. Dry-run / status show `[image] media/...` when paired
+Posts get images in this order:
+
+1. **Manual** — drop files into `media/` (used first)
+2. **Link previews** — Open Graph images fetched from URLs in the post
+3. **Text cards** — generated cards for tips / quotes / trends when no OG image exists
+
+Rebuild after changes:
+
+```bash
+python generate_queue.py --replace
+python bot.py --dry-run   # shows [image] path when paired
+```
 
 ## Files
 

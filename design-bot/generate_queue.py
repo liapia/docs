@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 
 from media_util import available_images, to_rel
 from queue_file import QueueItem, load_queue, pending_items, save_queue
+from resolve_media import resolve_preview
 from sources import CATEGORIES, loved_link_posts, loved_retweet_ids
 
 # Categories that benefit from an auto-attached image when media/ has files.
@@ -75,16 +76,27 @@ def generate_queue(count: int = 24, replace: bool = False) -> list[QueueItem]:
         if category == "retweet":
             text = f"Retweet {retweet_id}"
 
-        created.append(
-            QueueItem(
-                id=str(uuid.uuid4())[:8],
-                text=text,
-                category=category,
-                created_at=now,
-                image_path=image_path,
-                retweet_id=retweet_id,
-            )
+        item = QueueItem(
+            id=str(uuid.uuid4())[:8],
+            text=text,
+            category=category,
+            created_at=now,
+            image_path=image_path,
+            retweet_id=retweet_id,
         )
+
+        # Auto preview: manual media/ wins; otherwise OG image or generated card.
+        if not item.image_path and category != "retweet":
+            try:
+                preview = resolve_preview(item)
+            except Exception as exc:  # noqa: BLE001 — previews are best-effort
+                print(f"Preview skipped for {item.id}: {exc}")
+                preview = None
+            if preview:
+                item.image_path = preview
+                used_images.add(preview)
+
+        created.append(item)
 
     items = posted + keep_pending + created
     # Interleave a bit so retweets/links aren't all clustered at the end
