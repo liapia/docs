@@ -1,0 +1,11 @@
+{
+  "name": "Mintlify Docs",
+  "install": "npm config set prefix \"$HOME/.npm-global\" && npm install -g mintlify",
+  "terminals": [
+    {
+      "name": "mintlify-dev",
+      "command": "export PATH=\"$HOME/.npm-global/bin:$PATH\" && mintlify dev"
+    }
+  ],
+  "ports": [3000]
+}
