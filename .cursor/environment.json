@@ -1,6 +1,6 @@
 {
-  "name": "Mintlify Docs",
-  "install": "npm config set prefix \"$HOME/.npm-global\" && npm install -g mintlify",
+  "name": "docs + design bot",
+  "install": "npm config set prefix \"$HOME/.npm-global\" && npm install -g mintlify && bash design-bot/setup.sh",
   "terminals": [
     {
       "name": "mintlify-dev",
