@@ -1,10 +1,6 @@
 {
-<<<<<<< HEAD
   "name": "docs + design bot",
-  "install": "bash design-bot/setup.sh"
-=======
-  "name": "Mintlify Docs",
-  "install": "npm config set prefix \"$HOME/.npm-global\" && npm install -g mintlify",
+  "install": "npm config set prefix \"$HOME/.npm-global\" && npm install -g mintlify && bash design-bot/setup.sh",
   "terminals": [
     {
       "name": "mintlify-dev",
@@ -12,5 +8,4 @@
     }
   ],
   "ports": [3000]
->>>>>>> origin/main
 }
